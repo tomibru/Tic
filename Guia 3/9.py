@@ -27,7 +27,7 @@ def inecuacion_kraft( alfabeto_codigo, longitud_palabras):
         suma += math.pow(r, -longitud)
     return (round(suma,10) <= 1)
 
-palabras_codigo = [")", "[]", "]]", "([", "[()]", "([)]"];
+palabras_codigo = [")", "[]", "]]", "([", "[()]", "([)]"]
 
 alfabeto_codigo = obtener_alfabeto_codigo(palabras_codigo)
 longitud_palabras = obtener_longitud_palabras(palabras_codigo)
