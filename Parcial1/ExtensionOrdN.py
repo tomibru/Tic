@@ -29,20 +29,3 @@ def punto10(alfabeto, probabilidades, n):
         probExt.append(probAcumulada)
 
     return alfaExt, probExt
-
-alfabeto = ['A', 'B', 'C']
-probabilidades = [0.5, 0.3, 0.2]
-n = 2
-
-alfaExt, probExt = punto10(alfabeto, probabilidades, n)
-
-print(f"Alfabeto original: {alfabeto}")
-print(f"Probabilidades originales: {probabilidades}")
-print(f"Orden de extensión n = {n}\n")
-
-print("Alfabeto extendido y sus probabilidades:")
-for simbolo, prob in zip(alfaExt, probExt):
-    print(f"  {simbolo} -> {prob:.4f}")
-
-print(f"\nCantidad de símbolos extendidos: {len(alfaExt)}")
-print(f"Suma de probabilidades: {sum(probExt):.6f}  (debe dar 1.0)")

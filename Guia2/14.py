@@ -11,6 +11,7 @@ def vector_estacionario(matriz_transicion,n):
     V = vectorBase(n)
     while antV != V:
         antV = V.copy()
+        V= []
         for i in range(len(matriz_transicion)):
             suma=0
             for j in range(len(matriz_transicion)):

@@ -73,7 +73,7 @@ def retornarCadena(n,alfabeto,transicion):
         probabilidades = []
         for i in range(len(alfabeto)):
             probabilidades.append(transicion[i][columna])
-        simbolo = random.choices(alfabeto, weights = probabilidades)
+        simbolo = random.choices(alfabeto, weights = probabilidades)[0]
 
         cadena.append(simbolo)
     return cadena

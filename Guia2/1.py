@@ -4,8 +4,9 @@ Lista = [0.5, 0.2, 0.15, 0.15]
 
 # a. Cantidad de información de cada símbolo
 def CrearListaInfo(Lista):
+    ListaInfo = []
     for p in Lista:
-        ListaInfo=[p] = -math.log2(Lista[p])
+        ListaInfo.append(-math.log2(p))
     return ListaInfo
 
 # b. Entropía de la fuente
@@ -17,7 +18,7 @@ def entropia(Lista, ListaInfo):
 
 ListaInfo = CrearListaInfo(Lista)
 
-print("Cantidad de información:", ListaInfo)
-print("Entropía:", entropia(Lista, ListaInfo))
+print("-----Cantidad de información-----\n", ListaInfo)
+print("-----Entropía-----\n", entropia(Lista, ListaInfo))
 
 
