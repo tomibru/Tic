@@ -49,27 +49,6 @@ print("---Inecuacion de Kraft---")
 print(inecuacion_kraft(C,X))
 print("\n")
 
-"""todos los símbolos/codificaciones del código tienen la misma longitud"""
-
-def es_codigo_bloque(codigo):
-
-    if len(codigo) == 0:
-        return False
-
-    longitud = len(codigo[0])
-
-    for palabra in codigo:
-        if len(palabra) != longitud:
-            return False
-
-    return True
-
-if es_codigo_bloque(C):
-    print("Es código bloque")
-else:
-    print("No es código bloque")
-print("\n")
-
 """Códigos No Singulares: Exigen que a cada símbolo fuente le corresponda una palabra código 
 distinta. Evita confusiones al codificar símbolos individuales, pero no garantiza la 
 decodificación de cadenas de símbolos concatenados"""
