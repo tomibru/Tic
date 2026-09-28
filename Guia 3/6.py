@@ -7,7 +7,7 @@ def univocamente_decodificable(cod_bloque):
         return True
     else:
         #Sardinas-Patterson
-        s_0 = set(cod_bloque)
+        s_0 = set(cod_bloque)#Me deshago de los repetidos
         
         # 1. Armamos S1 (sufijos iniciales)
         s_k = set()
@@ -23,7 +23,7 @@ def univocamente_decodificable(cod_bloque):
 
         # 2. Iteramos para generar S2, S3, ...
         s_historial = []  # Para detectar si entramos en un bucle infinito
-        
+        # isdisjoint : pregunta "¿estos dos conjuntos no tienen nada en común?"
         while s_k and s_k not in s_historial:
             # Si un sufijo en S_k es exactamente una palabra código original -> NO es UD
             if not s_k.isdisjoint(s_0):
@@ -75,3 +75,5 @@ if univocamente_decodificable(lenguage_codigo):
     print("Es univocamente decodificable")
 else:
     print("No es univocamente decodificable")
+
+    

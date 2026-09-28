@@ -58,21 +58,38 @@ def Matriz_Transicion(cadena, alfabeto):
   return M
 
 def es_fuente_memoria_nula(matriz, probabilidades, tolerancia):
-  """Verifica si las filas de la matriz coinciden con las probabilidades individuales."""
-  for fila in matriz:
-    for j in range(len(fila)):
-        # Si la probabilidad condicional difiere de la probabilidad simple
-        if abs(fila[j] - probabilidades[j]) > tolerancia:
-            return False
-    return True
+  n = len(probabilidades)
+
+  for j in range(n):
+    # Extraemos la columna j (transiciones desde el símbolo j)
+    columna_j = [matriz[i][j] for i in range(n)]
+
+    # Verificamos si la columna j es igual a la lista de probabilidades
+    for i in range(n):
+      if abs(columna_j[i] - probabilidades[i]) > tolerancia:
+        return False
+
+  return True
 
 import math
-def entropia(probs):
-    suma=0
+def entropia(probs, M, V):
     r=2
-    for p in probs:
-        suma += p * -math.log(p,r)
-    return suma
+    if es_fuente_memoria_nula(M, probs, 0.02):
+        suma=0
+        for p in probs:
+            suma += p * -math.log(p,r)
+        return suma
+    else:
+        h1 =0
+        for i in range(len(V)):
+            suma_condicional=0
+            p_i_estacionaria = V[i]
+            for j in range(len(V)):
+                p_j_dado_i = M[j][i]
+                if p_j_dado_i > 0:
+                    suma_condicional +=  p_j_dado_i * -math.log(p_j_dado_i, r) 
+            h1 += suma_condicional * p_i_estacionaria
+        return h1      
 
 def vectorBase(n):
     v=[]
@@ -127,7 +144,44 @@ def extensionN(alfabeto, probabilidades, n):
 
     return alfaExt, probExt
 
-mensaje = ".;.:.:.::;:,::.;:,::,;,:;.:.;.;;:,.::.:,.:.;:::::."
+def es_fuente_ergodica(matriz, tolerancia):
+
+    n = len(matriz)
+
+    # Primero verificamos que sea irreducible
+    for inicio in range(n):
+
+        visitados = []
+        por_visitar = [inicio]
+
+        while len(por_visitar) > 0:
+
+            actual = por_visitar.pop()
+
+            if actual not in visitados:
+                visitados.append(actual)
+
+                # La columna actual representa desde donde salimos
+                for siguiente in range(n):
+                    if matriz[siguiente][actual] > tolerancia:
+                        if siguiente not in visitados:
+                            por_visitar.append(siguiente)
+
+        # Si no pudimos llegar a todos los estados,
+        # la fuente no es irreducible
+        if len(visitados) != n:
+            return False
+
+    # Si es irreducible, verificamos que sea aperiódica
+    for i in range(n):
+        if matriz[i][i] > tolerancia:
+            return True
+
+    return False
+
+#.;.:.:.::;:,::.;:,::,;,:;.:.;.;;:,.::.:,.:.;:::::.
+#")[))[([()))()[[]](([[)))])))][))(][)[[[)()]))[)[])"
+mensaje = ";;,;,;:,,,.;,,.,,,::,;;;,:;.,,;:,,,:..;,;;.,;,,.:;"
 
 alfabeto, probabilidades = extraer_alfabeto_y_probabilidades(mensaje)
 for a,p in zip(alfabeto,probabilidades):
@@ -141,10 +195,10 @@ for simbolo_fila, fila in zip(alfabeto, MatrizTransicion):
     print(f"{simbolo_fila:>3} " + "  ".join(f"{valor:.4f}" for valor in fila))
 print("\n")
 
-if es_fuente_memoria_nula(MatrizTransicion, probabilidades, 0.01):
+if es_fuente_memoria_nula(MatrizTransicion, probabilidades, 0.02):
    print("Fuente de memoria nula")
 else:
-   print("Fuente de memoria no nula")
+   print("Fuente con memoria")
 print("\n")
 
 vectorEstacionario = vector_estacionario(MatrizTransicion, len(alfabeto))
@@ -154,7 +208,7 @@ for n in vectorEstacionario:
     print(n)
 print("\n")
 
-print("Entropia :" , entropia(probabilidades))
+print("Entropia :" , entropia(probabilidades, MatrizTransicion , vectorEstacionario))
 print("\n")
 
 #Extension orden n
@@ -162,10 +216,16 @@ n = 2
 alfaExt, probExt = extensionN(alfabeto, probabilidades, n)
 
 # Mostrar cada extensión junto a su probabilidad usando zip
-print("Entropia extension: ", entropia(probabilidades) * n)
+print("Entropia extension: ", entropia(probabilidades, MatrizTransicion, vectorEstacionario) * n)
 print(f"{'Extensión':<15} | {'Probabilidad':<12}")
 print("-" * 30)
 
 for simbolo, prob in zip(alfaExt, probExt):
-  print(f"{simbolo:<15} | {prob:.4f}")
+    print(f"{simbolo:<15} | {prob:.4f}")
+print("\n   ")
+
+if es_fuente_ergodica(MatrizTransicion, 0.02):
+    print("Fuente ergódica")
+else:
+    print("Fuente no ergódica")
 
