@@ -1,3 +1,13 @@
+import math
+print("\n")
+print("-"*20 + "UNIDAD  2" + "-"*20)
+"""  
+ALFABETO Y PROBABILIDADES:
+    - Se identificaron los símbolos únicos del mensaje S = {S1, ..., Sn}.
+    - P(Si) = n_i / N, donde n_i es la frecuencia del símbolo Si y N la longitud
+      total de la cadena de entrada.
+"""
+
 def extraer_alfabeto_y_probabilidades(mensaje):
     alfabeto = []
     probabilidades = []
@@ -26,6 +36,18 @@ def inicializarMatriz(n):
         matriz.append(fila)
     return matriz
 
+"""
+MATRIZ TRANSICION:
+
+Para construir la matriz de transición condicional P(S_i | S_j) ,
+se contabilizó la frecuencia absoluta de transiciones N(S_j --> S_i). 
+Posicionamiento: S_j (estado previo) representa la columna y S_i (estado posterior) representa 
+a fila.
+Cálculo: La probabilidad condicional se obtiene dividiendo el número de pares (S_j, S_i) por 
+la cantidad total de veces que se emitió el símbolo inicial S_j
+
+Entonces P(S_i | S_j) = N(S_j --> S_i)/N(S_j)
+"""
 def Matriz_Transicion(cadena, alfabeto):
   transiciones = {}
   salidas = {}
@@ -57,6 +79,16 @@ def Matriz_Transicion(cadena, alfabeto):
 
   return M
 
+"""
+Estimacion de memoria:
+
+Para determinar si la fuente es de memoria nula o no se comparo cada columna de la 
+matriz de transicion con las probabilidades de cada simbolo con una tolerancia 
+preestablecida en este caso de 0.02. Si para todo elemento de la matriz se cumple que
+| M[i,j] - Probs[i] | <= 0.02 entonces podemos considerar a la fuente de memoria nula, 
+en caso contrario sera fuente con memoria.
+"""
+
 def es_fuente_memoria_nula(matriz, probabilidades, tolerancia):
   n = len(probabilidades)
 
@@ -71,7 +103,19 @@ def es_fuente_memoria_nula(matriz, probabilidades, tolerancia):
 
   return True
 
-import math
+
+"""
+Entropia:
+
+Dependiendo del tipo de fuente se aplican sus respectivas formulas 
+    Memoria nula:
+        H(S) = sum(P(S_i) * -log_2(P(S_i)))
+    Con memoria:
+        H(S) = sum( P_i * H(S|Si) )
+        donde H(S|Si) = - sum( P(Sj|Si) * log2(P(Sj|Si)) ) y P_i son las
+        componentes del vector estacionario.
+"""
+
 def entropia(probs, M, V):
     r=2
     if es_fuente_memoria_nula(M, probs, 0.02):
@@ -89,7 +133,21 @@ def entropia(probs, M, V):
                 if p_j_dado_i > 0:
                     suma_condicional +=  p_j_dado_i * -math.log(p_j_dado_i, r) 
             h1 += suma_condicional * p_i_estacionaria
-        return h1      
+        return h1    
+
+"""
+Vector estacionario:
+
+La distribución de probabilidades en cada t (vectores de estado) va variando con la 
+evolución del proceso de emisión de símbolos, hasta estabilizarse en el estado estacionario. 
+
+
+Se inicializa un vector base, cada elemento en 1/n, 
+se multiplica con la matriz de forma consecutiva hasta que la diferencia entre su version 
+anterior y la nueva difieran como maximo en una tolerancia de 1x10^-9 y realizando maximo de 
+iteraciones de 2000.
+"""
+  
 
 def vectorBase(n):
     v=[]
@@ -97,10 +155,13 @@ def vectorBase(n):
         v.append(1/n) 
     return v
 
-def vector_estacionario(matrizTransicion,n):
+def vector_estacionario(matrizTransicion,n, tolerancia):
     antV= []
     V = vectorBase(n)
-    while antV != V:
+    distintos = True
+    iteraciones =0
+    while distintos or iteraciones < 2000:
+        iteraciones += 1
         antV = V.copy()
         V= []
         for i in range(len(matrizTransicion)):
@@ -108,9 +169,20 @@ def vector_estacionario(matrizTransicion,n):
             for j in range(len(matrizTransicion)):
                 suma+= antV[j]* matrizTransicion[i][j]
             V.append(suma)
+        elementos = 0
+        while elementos < len(V) and abs(antV[elementos] - V[elementos]) < tolerancia:
+            elementos += 1
+        if elementos == len(V):
+            distintos = False
 
     return V
 
+"""
+Extensión de Orden N (Si es Memoria Nula):
+Se generaron todas las combinaciones posibles de pares de símbolos S^N 
+Al ser memoria nula, la probabilidad de cada par es el producto de sus probabilidades marginales
+La entropía de la extensión cumple H(S^N) = N * H(S).   
+"""
 
 def generar_combinaciones(alfabeto, n):
     combinaciones = [""]  # arranca con el bloque vacío
@@ -179,9 +251,11 @@ def es_fuente_ergodica(matriz, tolerancia):
 
     return False
 
+#---------------MAIN----------------------------------------------------------------------
+
 #.;.:.:.::;:,::.;:,::,;,:;.:.;.;;:,.::.:,.:.;:::::.
 #")[))[([()))()[[]](([[)))])))][))(][)[[[)()]))[)[])"
-mensaje = ";;,;,;:,,,.;,,.,,,::,;;;,:;.,,;:,,,:..;,;;.,;,,.:;"
+mensaje = ".;.:.:.::;:,::.;:,::,;,:;.:.;.;;:,.::.:,.:.;:::::."
 
 alfabeto, probabilidades = extraer_alfabeto_y_probabilidades(mensaje)
 for a,p in zip(alfabeto,probabilidades):
@@ -201,7 +275,7 @@ else:
    print("Fuente con memoria")
 print("\n")
 
-vectorEstacionario = vector_estacionario(MatrizTransicion, len(alfabeto))
+vectorEstacionario = vector_estacionario(MatrizTransicion, len(alfabeto), 1e-9)
 
 print("Vector estacionario")
 for n in vectorEstacionario:
@@ -228,4 +302,3 @@ if es_fuente_ergodica(MatrizTransicion, 0.02):
     print("Fuente ergódica")
 else:
     print("Fuente no ergódica")
-
