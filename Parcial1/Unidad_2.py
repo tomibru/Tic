@@ -236,11 +236,13 @@ print("\n")
 
 """
 Codigo Compacto:
+Un código es compacto si es instantáneo y de longitud media mínima entre todos los 
+códigos instantáneos para esa fuente y ese alfabeto.
 
 Verifico si es ud, en el caso que lo sea verifico la condicion de que para 
 todo codigo se cumpla que:
 
-long_i =  techo(-log_r(p(S_i))), siendo r la cantidad de simbolos del alfabeto codigo
+    long_i =  techo(-log_r(p(S_i))), siendo r la cantidad de simbolos del alfabeto codigo
 """
 def compacto(x,codigos, probs):
     r = len(x)

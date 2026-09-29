@@ -160,7 +160,7 @@ def vector_estacionario(matrizTransicion,n, tolerancia):
     V = vectorBase(n)
     distintos = True
     iteraciones =0
-    while distintos or iteraciones < 2000:
+    while distintos and iteraciones < 2000:
         iteraciones += 1
         antV = V.copy()
         V= []
@@ -215,6 +215,14 @@ def extensionN(alfabeto, probabilidades, n):
         probExt.append(probAcumulada)
 
     return alfaExt, probExt
+
+
+"""
+Una fuente ergódica es irreducible y aperiódica:
+
+Irreducible: desde cualquier estado se puede llegar a cualquier otro en un número finito de pasos, aunque no sea directo.
+Aperiódica: no queda atrapada en ciclos de período fijo.
+"""
 
 def es_fuente_ergodica(matriz, tolerancia):
 
@@ -290,7 +298,7 @@ n = 2
 alfaExt, probExt = extensionN(alfabeto, probabilidades, n)
 
 # Mostrar cada extensión junto a su probabilidad usando zip
-print("Entropia extension: ", entropia(probabilidades, MatrizTransicion, vectorEstacionario) * n)
+print("Entropia extension (H(Sⁿ) = n·H(S): al ser independientes, las entropías de los n símbolos se suman.): ", entropia(probabilidades, MatrizTransicion, vectorEstacionario) * n)
 print(f"{'Extensión':<15} | {'Probabilidad':<12}")
 print("-" * 30)
 
