@@ -1,0 +1,95 @@
+Tema 1: Codificación
+
+A. Qué analizar de la fuente
+
+Entropía: ¿qué tan cerca está del máximo log₂(q)? Si está cerca, la fuente es casi uniforme y comprime poco. Si está lejos, hay redundancia en la fuente y se puede comprimir mucho.
+Probabilidades: ¿son casi diádicas? Si lo son, Huffman casi no pierde nada.
+
+B. Qué analizar de cada código
+
+L ≥ H: nunca se puede bajar de la entropía. Si te da menos, hay un error de cálculo.
+η y R: ¿qué tan cerca de 1 está el rendimiento? Explicá de dónde viene la redundancia: de las longitudes enteras.
+Compacto: Huffman garantiza longitud media mínima, así que ningún otro código instantáneo lo mejora para ese alfabeto.
+Tasa de compresión: de qué base parte (8 bits ASCII), a qué llega, y cómo se relaciona con la entropía.
+
+C. Qué analizar de la extensión
+
+Unidades: Lₙ está en bits por bloque. Comparar siempre con Lₙ/n.
+Mejora: compará η y Lₙ/n contra los de la fuente. ¿Cuánto ganaste en números?
+Por qué mejora: el redondeo a enteros se reparte entre n símbolos y la cota de Shannon baja como 1/n.
+Costo: qⁿ palabras código, más complejidad, más demora, relleno si el largo no es múltiplo de n.
+Decisión: ¿conviene o no? Basate en el tamaño de la mejora.
+
+D. Primer Teorema de Shannon
+
+Verificá con el código realmente generado: H(S) ≤ Lₙ/n < H(S) + 1/n.
+Si no cumple, algo está mal (cálculo o código no compacto).
+
+Chequeos antes de entregar: L ≥ H, 0 ≤ η ≤ 1, η = 1 − R, L y η consistentes entre sí, el bloque con mayor probabilidad tiene el código más corto.
+
+Preguntas que tu conclusión debería responder:
+
+¿Por qué el código de la fuente no es perfecto?
+¿Qué logra la extensión y a qué precio?
+¿Cuál elegirías y por qué?
+Tema 2: Canales
+
+A. Qué analizar de la matriz y la clasificación
+
+¿Hay columnas con más de un valor no nulo? Ahí hay ambigüedad: esa salida puede venir de varias entradas.
+Clasificá: sin ruido (columnas con un solo valor), determinante (filas con un solo valor), o ninguno. Justificá mirando la matriz.
+Verificá que cada fila sume 1.
+
+B. Qué analizar de las métricas
+
+H(A|B) (equivocación): incertidumbre que queda sobre la entrada tras ver la salida.
+H(B|A) (pérdida): información que agrega el ruido a la salida.
+I(A,B): lo que realmente se transmite. Compará con H(A): ¿qué porcentaje de la entrada se recupera?
+Relaciones: I = H(A) − H(A|B) = H(B) − H(B|A), e I ≤ mín(H(A), H(B)).
+Un canal sin ruido tiene H(A|B) = 0, y uno determinante tiene H(B|A) = 0.
+
+C. Qué analizar de la reducción
+
+Qué columnas se fusionaron y por qué (proporcionales).
+Qué se conserva (I, C, y en este caso la PE) y qué cambia (la entropía de la salida).
+Si no hay columnas proporcionales, decí que el canal ya es irreducible.
+
+D. Qué analizar de la capacidad
+
+C es el máximo de I sobre las distribuciones de entrada. Compará con I real: ¿qué fracción del canal se aprovecha?
+¿Por qué la distribución óptima difiere de la real? Qué símbolo conviene usar más y por qué (el menos ambiguo).
+Es equiprobable solo en canales simétricos.
+
+E. Qué analizar de la probabilidad de error
+
+Qué significa (el receptor se equivoca X % de las veces con la mejor regla).
+Cuánto baja respecto de no mirar la salida (1 − máx P(a)).
+De dónde vienen los errores: qué salida es ambigua y qué entrada se confunde.
+Relación con H(A|B), I y la clasificación. Si es alta, justifica agregar redundancia (Segundo Teorema de Shannon).
+Se calcula con la distribución real, no con la de la capacidad.
+
+F. Paridad (detección y corrección)
+
+Qué filas y columnas fallan, y qué patrón implica:
+Una fila y una columna: error simple, se corrige en la intersección.
+Solo filas o solo columnas, o varias: se detecta, no se corrige.
+Sin fallas: sin errores detectados (aunque podría haber un patrón no detectable).
+Si el error cae en un bit de paridad, se corrige igual.
+Mostrá la matriz corregida y el texto resultante.
+Conectá con el resto: es redundancia agregada, el costo de poder corregir.
+
+Chequeos antes de entregar: filas que suman 1, I ≤ mín(H(A), H(B)), I ≤ C, 0 ≤ PE ≤ 1, la PE del canal reducido igual a la del original.
+
+Preguntas que tu conclusión debería responder:
+
+¿Es un buen canal? Mirá I/H(A), PE y la clasificación.
+¿Se está usando bien? Mirá I contra C.
+¿Qué haría falta para transmitir con confianza? Redundancia, como la paridad.
+Para ambos temas: estructura de cada explicación
+Qué se hizo (método en una línea).
+Fórmula aplicada.
+Resultado con su número.
+Interpretación en una línea.
+
+ANALISIS CAPACIDAD
+La información mutua depende de la matriz del canal y de la distribución de entrada. La capacidad es el máximo de I sobre todas las distribuciones posibles, y se alcanza con P(0) ≈ 0,603 y P(1) ≈ 0,397. La distribución real de la fuente (P(0) = 0,4688) no fue elegida en función del canal, por lo que da I = 0,2814 < C = 0,2988. La fuente usa menos el símbolo 0, que es el que el canal transmite sin ambigüedad. Para alcanzar la capacidad habría que adaptar la fuente (por ejemplo, con una codificación) a la distribución óptima.

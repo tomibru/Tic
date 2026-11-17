@@ -37,3 +37,11 @@ def decodificar_bytearray(s, c, ba):
             buffer = ""
 
     return mensaje
+
+mensaje = "HOLA MUNDO ME VAN A DAR UN DIE EN TIC"
+alfabeto = ["H", "O", "L", "A", " ", "M", "U", "N", "D", "E", "V", "R", "G", "T", "I", "C", "1", "0"]
+codificacion = ["0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111", "00000", "00001"]
+print("Mensaje original:", mensaje)
+ba = generar_bytearray(alfabeto, codificacion, mensaje)
+print("Bytearray generado:", ba)
+print("Mensaje decodificado:", decodificar_bytearray(alfabeto, codificacion, ba))
